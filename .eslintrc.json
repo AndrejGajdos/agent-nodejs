@@ -17,7 +17,7 @@
     "sourceType": "module",
     "project": ["./tsconfig.eslint.json"]
   },
-  "plugins": ["@typescript-eslint", "prettier", "sort-imports-es6-autofix", "jest"],
+  "plugins": ["@typescript-eslint", "prettier", "simple-import-sort", "jest"],
   "rules": {
     "prettier/prettier": "error",
     "max-len": ["error", { "code": 100, "ignorePattern": "^(import|export) .*" }],
@@ -46,13 +46,6 @@
     // Consistent return is enforced by typescript
     "consistent-return": "off",
     "import/no-cycle": "off",
-    "sort-imports-es6-autofix/sort-imports-es6": [
-      "error",
-      {
-        "ignoreCase": false,
-        "ignoreMemberSort": false,
-        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
-      }
-    ]
+    "simple-import-sort/imports": "error"
   }
 }
