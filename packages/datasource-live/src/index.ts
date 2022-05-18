@@ -1,10 +1,13 @@
-import { DataSourceFactory, Logger } from '@forestadmin/datasource-toolkit';
+import { DataSource, DataSourceFactory, Logger } from '@forestadmin/datasource-toolkit';
+import { Sequelize } from 'sequelize/types';
+import { SequelizeDataSource } from '@forestadmin/datasource-sequelize';
 
 import { LiveSchema } from './types';
-import LiveDataSource from './datasource';
+import CollectionAttributesConverter from './utils/attributes-converter';
+import CollectionRelationsConverter from './utils/relation-converter';
 
 export type LiveDataSourceOptions = {
-  seeder: (datasource: LiveDataSource) => Promise<void>;
+  seeder: (datasource: DataSource) => Promise<void>;
 };
 
 export function createLiveDataSource(
@@ -12,11 +15,22 @@ export function createLiveDataSource(
   options?: LiveDataSourceOptions,
 ): DataSourceFactory {
   return async (logger: Logger) => {
-    const datasource = new LiveDataSource(schema, logger);
-    await datasource.syncCollections();
+    const logging = (sql: string) => logger?.('Debug', sql.substring(sql.indexOf(':') + 2));
+    const sequelize = new Sequelize('sqlite::memory:', { logging });
 
-    if (options?.seeder) await options.seeder(datasource);
+    // Set all columns, and then relations
+    for (const [name, collectionSchema] of Object.entries(schema))
+      sequelize.define(name, CollectionAttributesConverter.convert(collectionSchema));
+    for (const [name, collectionSchema] of Object.entries(schema))
+      CollectionRelationsConverter.convert(name, collectionSchema, sequelize);
 
-    return datasource;
+    // Synchronize
+    await sequelize.sync({ force: true });
+
+    // Seed
+    const dataSource = new SequelizeDataSource(sequelize, logger);
+    if (options?.seeder) await options.seeder(dataSource);
+
+    return dataSource;
   };
 }
