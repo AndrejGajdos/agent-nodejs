@@ -15,11 +15,19 @@ export type LiveDataSourceOptions = {
 };
 
 export type CachedDataSourceOptions = {
-  listChanges(
-    cursor?: string,
-  ): Promise<{ cursor: string; changes: RecordData[]; deletions: CompositeId[] }>;
+  listChanges(cursor?: any): Promise<{
+    done: boolean;
+    nextCursor: any;
+    changes: {
+      [collection: string]: {
+        creations: RecordData[];
+        updates: RecordData[];
+        deletions: CompositeId[];
+      };
+    };
+  }>;
 
-  createRecord(name: string, data: RecordData): Promise<void>;
-  updateRecord(name: string, id: CompositeId, patch: RecordData): Promise<void>;
-  deleteRecord(name: string, id: CompositeId): Promise<void>;
+  createRecord?(name: string, data: RecordData): Promise<void>;
+  updateRecord?(name: string, id: CompositeId, patch: RecordData): Promise<void>;
+  deleteRecord?(name: string, id: CompositeId): Promise<void>;
 };

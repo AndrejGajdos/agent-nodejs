@@ -1,9 +1,11 @@
 import {
+  ActionField,
+  ActionResult,
   AggregateResult,
   Aggregation,
-  BaseCollection,
   Caller,
   Collection,
+  CollectionSchema,
   ConditionTreeFactory,
   Filter,
   PaginatedFilter,
@@ -15,20 +17,24 @@ import {
 import { CachedDataSourceOptions } from '../types';
 import CachedDataSource from './cached-datasource';
 
-export default class CachedCollection extends BaseCollection {
-  override dataSource: CachedDataSource;
+export default class CachedCollection implements Collection {
+  dataSource: CachedDataSource;
+
   private cache: Collection;
   private options: CachedDataSourceOptions;
 
-  constructor(
-    collection: Collection,
-    dataSource: CachedDataSource,
-    options: CachedDataSourceOptions,
-  ) {
-    super(collection.name, dataSource);
-
-    this.cache = collection;
+  constructor(cache: Collection, dataSource: CachedDataSource, options: CachedDataSourceOptions) {
+    this.dataSource = dataSource;
+    this.cache = cache;
     this.options = options;
+  }
+
+  get name(): string {
+    return this.cache.name;
+  }
+
+  get schema(): CollectionSchema {
+    return this.cache.schema;
   }
 
   async create(caller: Caller, records: RecordData[]): Promise<RecordData[]> {
@@ -77,8 +83,16 @@ export default class CachedCollection extends BaseCollection {
     aggregation: Aggregation,
     limit?: number,
   ): Promise<AggregateResult[]> {
-    this.dataSource.sync();
+    await this.dataSource.sync();
 
     return this.cache.aggregate(caller, filter, aggregation, limit);
+  }
+
+  execute(): Promise<ActionResult> {
+    throw new Error('Method not implemented.');
+  }
+
+  getForm(): Promise<ActionField[]> {
+    throw new Error('Method not implemented.');
   }
 }

@@ -6,7 +6,7 @@ import { createSqlDataSource } from '@forestadmin/datasource-sql';
 
 import { Schema } from './typings';
 import { liveDatasourceSchema, seedLiveDatasource } from './datasources/live';
-import createTypicode from './datasources/typicode-translation';
+import createTypicode from './datasources/typicode-cached';
 import customizeAddress from './customizations/address';
 import customizeComment from './customizations/comment';
 import customizeCustomer from './customizations/customer';
@@ -32,29 +32,31 @@ export default function makeAgent() {
     typingsPath: 'src/forest/typings.ts',
   };
 
-  return createAgent<Schema>(envOptions)
-    .addDataSource(createLiveDataSource(liveDatasourceSchema, { seeder: seedLiveDatasource }))
-    .addDataSource(createSqlDataSource('mariadb://example:password@localhost:3808/example'))
-    .addDataSource(createTypicode())
-    .addDataSource(createSequelizeDataSource(sequelizePostgres))
-    .addDataSource(createSequelizeDataSource(sequelizeMySql))
-    .addDataSource(createSequelizeDataSource(sequelizeMsSql))
-    .addDataSource(createMongooseDataSource(mongoose))
+  return (
+    createAgent<Schema>(envOptions)
+      // .addDataSource(createLiveDataSource(liveDatasourceSchema, { seeder: seedLiveDatasource }))
+      // .addDataSource(createSqlDataSource('mariadb://example:password@localhost:3808/example'))
+      .addDataSource(createTypicode())
+  );
+  // .addDataSource(createSequelizeDataSource(sequelizePostgres))
+  // .addDataSource(createSequelizeDataSource(sequelizeMySql))
+  // .addDataSource(createSequelizeDataSource(sequelizeMsSql))
+  // .addDataSource(createMongooseDataSource(mongoose))
 
-    .addChart('numRentals', async (context, resultBuilder) => {
-      const rentals = context.dataSource.getCollection('rental');
-      const rows = await rentals.aggregate({}, { operation: 'Count' });
+  // .addChart('numRentals', async (context, resultBuilder) => {
+  //   const rentals = context.dataSource.getCollection('rental');
+  //   const rows = await rentals.aggregate({}, { operation: 'Count' });
 
-      return resultBuilder.value((rows?.[0]?.value as number) ?? 0);
-    })
+  //   return resultBuilder.value((rows?.[0]?.value as number) ?? 0);
+  // })
 
-    .customizeCollection('owner', customizeOwner)
-    .customizeCollection('address', customizeAddress)
-    .customizeCollection('store', customizeStore)
-    .customizeCollection('rental', customizeRental)
-    .customizeCollection('dvd', customizeDvd)
-    .customizeCollection('customer', customizeCustomer)
-    .customizeCollection('post', customizePost)
-    .customizeCollection('comment', customizeComment)
-    .customizeCollection('review', customizeReview);
+  // .customizeCollection('owner', customizeOwner)
+  // .customizeCollection('address', customizeAddress)
+  // .customizeCollection('store', customizeStore)
+  // .customizeCollection('rental', customizeRental)
+  // .customizeCollection('dvd', customizeDvd)
+  // .customizeCollection('customer', customizeCustomer)
+  // .customizeCollection('post', customizePost)
+  // .customizeCollection('comment', customizeComment)
+  // .customizeCollection('review', customizeReview);
 }

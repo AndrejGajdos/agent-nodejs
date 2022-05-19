@@ -1,8 +1,9 @@
 import { DataSourceFactory, Logger } from '@forestadmin/datasource-toolkit';
-import { Sequelize } from 'sequelize/types';
+import { Sequelize } from 'sequelize';
 import { SequelizeDataSource } from '@forestadmin/datasource-sequelize';
 
 import { CachedDataSourceOptions, LiveDataSourceOptions, LiveSchema } from './types';
+import CachedDataSource from './cached/cached-datasource';
 import CollectionAttributesConverter from './utils/attributes-converter';
 import CollectionRelationsConverter from './utils/relation-converter';
 
@@ -36,6 +37,9 @@ export function createCachedDataSource(
   options: CachedDataSourceOptions,
 ): DataSourceFactory {
   return async (logger: Logger) => {
-    const cache = await createLiveDataSource(schema);
+    const factory = createLiveDataSource(schema);
+    const cache = await factory(logger);
+
+    return new CachedDataSource(logger, cache, options);
   };
 }
