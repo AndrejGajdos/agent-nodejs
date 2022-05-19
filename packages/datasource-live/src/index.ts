@@ -1,14 +1,10 @@
-import { DataSource, DataSourceFactory, Logger } from '@forestadmin/datasource-toolkit';
+import { DataSourceFactory, Logger } from '@forestadmin/datasource-toolkit';
 import { Sequelize } from 'sequelize/types';
 import { SequelizeDataSource } from '@forestadmin/datasource-sequelize';
 
-import { LiveSchema } from './types';
+import { CachedDataSourceOptions, LiveDataSourceOptions, LiveSchema } from './types';
 import CollectionAttributesConverter from './utils/attributes-converter';
 import CollectionRelationsConverter from './utils/relation-converter';
-
-export type LiveDataSourceOptions = {
-  seeder: (datasource: DataSource) => Promise<void>;
-};
 
 export function createLiveDataSource(
   schema: LiveSchema,
@@ -32,5 +28,14 @@ export function createLiveDataSource(
     if (options?.seeder) await options.seeder(dataSource);
 
     return dataSource;
+  };
+}
+
+export function createCachedDataSource(
+  schema: LiveSchema,
+  options: CachedDataSourceOptions,
+): DataSourceFactory {
+  return async (logger: Logger) => {
+    const cache = await createLiveDataSource(schema);
   };
 }

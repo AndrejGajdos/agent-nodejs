@@ -26,4 +26,17 @@ export default class ProjectionFactory {
 
     return new Projection(...projectionFields);
   }
+
+  static columns(collection: Collection): Projection {
+    const schemaFields = collection.schema.fields;
+    const projectionFields = Object.entries(schemaFields).reduce((memo, [columnName, column]) => {
+      if (column.type === 'Column') {
+        return [...memo, columnName];
+      }
+
+      return memo;
+    }, [] as string[]);
+
+    return new Projection(...projectionFields);
+  }
 }

@@ -6,7 +6,7 @@ import { createSqlDataSource } from '@forestadmin/datasource-sql';
 
 import { Schema } from './typings';
 import { liveDatasourceSchema, seedLiveDatasource } from './datasources/live';
-import createTypicode from './datasources/typicode';
+import createTypicode from './datasources/typicode-translation';
 import customizeAddress from './customizations/address';
 import customizeComment from './customizations/comment';
 import customizeCustomer from './customizations/customer';
