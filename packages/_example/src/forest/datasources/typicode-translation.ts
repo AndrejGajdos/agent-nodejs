@@ -44,30 +44,34 @@ export default function createTypicodeTranslation(): DataSourceFactory {
     {
       post: {
         capabilities: { nativelySearchable: true },
-        structure: {
+        columns: {
           id: {
+            type: 'Number',
             isPrimaryKey: true,
-            type: 'Column',
-            columnType: 'Number',
-            filterOperators: new Set(['Equal']),
+            capabilities: { filterOperators: new Set(['Equal']) },
           },
-          userId: { type: 'Column', columnType: 'Number', filterOperators: new Set(['Equal']) },
-          title: { type: 'Column', columnType: 'String' },
-          body: { type: 'Column', columnType: 'String' },
+          userId: {
+            type: 'Number',
+            capabilities: { filterOperators: new Set(['Equal']) },
+          },
+          title: { type: 'String' },
+          body: { type: 'String' },
         },
       },
       comment: {
         capabilities: { nativelySearchable: true },
-        structure: {
+        columns: {
           id: {
+            type: 'Number',
             isPrimaryKey: true,
-            type: 'Column',
-            columnType: 'Number',
-            filterOperators: new Set(['Equal']),
+            capabilities: { filterOperators: new Set(['Equal']) },
           },
-          postId: { type: 'Column', columnType: 'Number', filterOperators: new Set(['Equal']) },
-          name: { type: 'Column', columnType: 'String' },
-          email: { type: 'Column', columnType: 'String' },
+          postId: {
+            type: 'Number',
+            capabilities: { filterOperators: new Set(['Equal']) },
+          },
+          name: { type: 'String' },
+          email: { type: 'String' },
         },
       },
     },
@@ -79,6 +83,7 @@ export default function createTypicodeTranslation(): DataSourceFactory {
 
         return projection.apply(response.body);
       },
+
       aggregate: async (caller, filter, aggregation, limit) => {
         if (aggregation.operation === 'Count' && !aggregation.groups?.length) {
           const request = buildRequest(filter).query({ _limit: 0 });
