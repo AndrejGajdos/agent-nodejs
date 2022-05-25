@@ -14,15 +14,16 @@ export { default as ChartDataSourceDecorator } from './decorators/chart/datasour
 export { default as ActionCollectionDecorator } from './decorators/actions/collection';
 export { default as ComputedCollectionDecorator } from './decorators/computed/collection';
 export { default as EmptyCollectionDecorator } from './decorators/empty/collection';
-export { default as RelationCollectionDecorator } from './decorators/relation/collection';
 export { default as OperatorsEmulateCollectionDecorator } from './decorators/operators-emulate/collection';
 export { default as OperatorsReplaceCollectionDecorator } from './decorators/operators-replace/collection';
 export { default as PublicationCollectionDecorator } from './decorators/publication/collection';
+export { default as RelationCollectionDecorator } from './decorators/relation/collection';
 export { default as RenameCollectionDecorator } from './decorators/rename/collection';
 export { default as SearchCollectionDecorator } from './decorators/search/collection';
-export { default as WriteCollectionDecorator } from './decorators/write/collection';
 export { default as SegmentCollectionDecorator } from './decorators/segment/collection';
 export { default as SortEmulateCollectionDecorator } from './decorators/sort-emulate/collection';
+export { default as ValidationCollectionDecorator } from './decorators/validation/collection';
+export { default as WriteCollectionDecorator } from './decorators/write/collection';
 
 // Decorators (helpers)
 export { Action as ActionDefinition } from './decorators/actions/types/actions';
