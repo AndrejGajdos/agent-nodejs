@@ -1,0 +1,42 @@
+{
+  "name": "@forestadmin/rpc-server",
+  "version": "0.0.0-development",
+  "main": "dist/index.js",
+  "license": "GPL-3.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ForestAdmin/agent-nodejs.git",
+    "directory": "packages/rpc-server"
+  },
+  "dependencies": {
+    "@forestadmin/datasource-toolkit": "1.0.0-beta.26",
+    "@forestadmin/datasource-sql": "1.0.0-beta.38",
+    "@koa/cors": "^3.3.0",
+    "@koa/router": "^10.1.1",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "object-hash": "^3.0.0"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rm -rf coverage dist",
+    "lint": "eslint src test",
+    "start": "nodemon --delay 250ms --watch '../*/dist/' --exec yarn start:rpc",
+    "start:rpc": "node --enable-source-maps --async-stack-traces -e \"require('./dist/index.js').default()\"",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/koa-bodyparser": "^4.3.5",
+    "@types/koa__router": "^8.0.11",
+    "@types/object-hash": "^2.2.1"
+  }
+}
