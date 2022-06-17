@@ -30,7 +30,7 @@ type QueryFn = (data: any) => Promise<any>;
 
 const defaultUrl = 'http://localhost:1234';
 
-export function createRemoteDataSource(options: any, url: string = defaultUrl): DataSourceFactory {
+export function connectRemoteDataSource(options: any, url: string = defaultUrl): DataSourceFactory {
   const query: QueryFn = async data => {
     const response = await axios.post(url, { dataSource: options, ...data });
 

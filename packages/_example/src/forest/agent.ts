@@ -1,7 +1,7 @@
 import { AgentOptions, createAgent } from '@forestadmin/agent';
+import { connectRemoteDataSource } from '@forestadmin/datasource-rpc';
 import { createLiveDataSource } from '@forestadmin/datasource-live';
 import { createMongooseDataSource } from '@forestadmin/datasource-mongoose';
-import { createRemoteDataSource } from '@forestadmin/datasource-rpc';
 import { createSequelizeDataSource } from '@forestadmin/datasource-sequelize';
 import { createSqlDataSource } from '@forestadmin/datasource-sql';
 
@@ -40,7 +40,7 @@ export default function makeAgent() {
       })
       // .addDataSource(createSqlDataSource('mariadb://example:password@localhost:3808/example'))
       .addDataSource(
-        createRemoteDataSource({
+        connectRemoteDataSource({
           type: 'sql',
           uri: 'mariadb://example:password@localhost:3808/example',
         }),
