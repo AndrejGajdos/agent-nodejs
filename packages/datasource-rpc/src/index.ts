@@ -5,14 +5,12 @@ import axios from 'axios';
 import { QueryFn } from './types';
 import RpcDataSource from './datasource';
 
-const defaultUrl = 'http://localhost:1234';
-
 export { default as RemoteCollection } from './collection';
 export { default as RemoteDatasource } from './datasource';
 
-export function connectRemoteDataSource(options: any, url: string = defaultUrl): DataSourceFactory {
+export function connectRemoteDataSource(url: string): DataSourceFactory {
   const query: QueryFn = async data => {
-    const response = await axios.post(url, { dataSource: options, ...data });
+    const response = await axios.post(url, data);
 
     return response.data;
   };
@@ -21,7 +19,25 @@ export function connectRemoteDataSource(options: any, url: string = defaultUrl):
     const handshake = JSON.parse(
       JSON.stringify(await query({ method: 'handshake' })),
       (key, value) => {
-        return key === 'filterOperators' ? new Set(value) : value;
+        if (key === 'filter_operators') {
+          return new Set(
+            value.map(
+              v => v[0].toUpperCase() + v.slice(1).replace(/(_\w)/g, k => k[1].toUpperCase()),
+            ),
+          );
+        }
+
+        if (key !== 'fields' && typeof value === 'object' && value?.constructor === Object) {
+          const newObj = {};
+
+          for (const [subKey, subValue] of Object.entries(value)) {
+            newObj[subKey.replace(/(_\w)/g, k => k[1].toUpperCase())] = subValue;
+          }
+
+          return newObj;
+        }
+
+        return value;
       },
     );
 

@@ -8,33 +8,36 @@ import {
   Projection,
   Sort,
 } from '@forestadmin/datasource-toolkit';
-import { createSqlDataSource } from '@forestadmin/datasource-sql';
-import Koa, { Context } from 'koa';
+import { Context } from 'koa';
+import Router from '@koa/router';
 import bodyParser from 'koa-bodyparser';
-import hashObject from 'object-hash';
 
-export default class RpcServer {
-  private instances: Record<string, DataSource> = {};
-  private app: Koa;
+import { RpcServerOptions } from '../../types';
 
-  constructor() {
-    this.app = new Koa();
-    this.app.use(bodyParser({ jsonLimit: '50mb' }));
-    this.app.use(this.handleRun.bind(this));
+export default class ForestAdminRpcServer {
+  private dataSource: DataSource;
+  private options: RpcServerOptions;
+
+  constructor(dataSource: DataSource, options: RpcServerOptions) {
+    this.dataSource = dataSource;
+    this.options = options;
   }
 
-  start() {
-    this.app.listen(1234);
+  async getRouter(): Promise<Router> {
+    const router = new Router();
+    router.use(bodyParser({ jsonLimit: '50mb' }));
+    router.use(this.handleRun.bind(this));
+    router.post('/', this.handleRun.bind(this));
+
+    return router;
   }
 
   private async handleRun(ctx: Context): Promise<void> {
     const { body } = ctx.request;
     let result: unknown;
 
-    const dataSource = await this.getDataSource(body.dataSource);
-
     if (body.collection) {
-      const collection = dataSource.getCollection(body.collection);
+      const collection = this.dataSource.getCollection(body.collection);
 
       if (body.method === 'list') {
         result = await collection.list(
@@ -66,12 +69,12 @@ export default class RpcServer {
         throw new Error('Unsupported');
       }
     } else if (body.method === 'renderChart') {
-      result = await dataSource.renderChart(body.params.caller, body.params.name);
+      result = await this.dataSource.renderChart(body.params.caller, body.params.name);
     } else if (body.method === 'schema') {
-      result = dataSource.schema;
+      result = this.dataSource.schema;
     } else if (body.method === 'handshake') {
-      const dataSourceSchema = dataSource.schema;
-      const collectionSchemas = dataSource.collections.reduce(
+      const dataSourceSchema = this.dataSource.schema;
+      const collectionSchemas = this.dataSource.collections.reduce(
         (memo, collection) => ({ ...memo, [collection.name]: collection.schema }),
         {},
       );
@@ -105,20 +108,5 @@ export default class RpcServer {
       searchExtended,
       segment,
     });
-  }
-
-  private async getDataSource(definition: any): Promise<DataSource> {
-    const id = hashObject(definition);
-
-    if (!this.instances[id]) {
-      if (definition.type === 'sql') {
-        const factory = createSqlDataSource(definition.uri);
-        this.instances[id] = await factory(() => {});
-      } else {
-        throw new Error('Unsupported');
-      }
-    }
-
-    return this.instances[id];
   }
 }
