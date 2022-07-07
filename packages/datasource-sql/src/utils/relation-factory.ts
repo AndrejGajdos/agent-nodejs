@@ -9,7 +9,12 @@ export default class RelationFactory {
     foreignReferences: Partial<ForeignKeyReference>[],
     uniqueFields: string[],
     sequelize: Sequelize,
+    excludedTables: string[],
   ): void {
+    if (excludedTables.includes(tableName)) {
+      return;
+    }
+
     const model = sequelize.model(tableName);
 
     if (RelationFactory.isJunctionTable(model)) {
@@ -17,9 +22,16 @@ export default class RelationFactory {
         foreignReferences as [Partial<ForeignKeyReference>, Partial<ForeignKeyReference>],
         model,
         sequelize,
+        excludedTables,
       );
     } else {
-      RelationFactory.buildOtherRelations(foreignReferences, model, uniqueFields, sequelize);
+      RelationFactory.buildOtherRelations(
+        foreignReferences,
+        model,
+        uniqueFields,
+        sequelize,
+        excludedTables,
+      );
     }
   }
 
@@ -28,8 +40,13 @@ export default class RelationFactory {
     model: ModelStatic<Model>,
     uniqueFields: string[],
     sequelize: Sequelize,
+    excludedTables: string[],
   ): void {
     foreignReferences.forEach(({ columnName, referencedTableName, referencedColumnName }) => {
+      if (excludedTables.includes(referencedTableName)) {
+        return;
+      }
+
       const referencedModel = sequelize.model(referencedTableName);
 
       model.belongsTo(referencedModel, {
@@ -55,11 +72,16 @@ export default class RelationFactory {
     foreignReferences: [Partial<ForeignKeyReference>, Partial<ForeignKeyReference>],
     model: ModelStatic<Model>,
     sequelize: Sequelize,
+    excludedTables: string[],
   ): void {
     const [
       { referencedTableName: tableA, columnName: columnA, referencedColumnName: referencedColumnA },
       { referencedTableName: tableB, columnName: columnB, referencedColumnName: referencedColumnB },
     ] = foreignReferences;
+
+    if (excludedTables.includes(tableA) || excludedTables.includes(tableB)) {
+      return;
+    }
 
     const modelA = sequelize.model(tableA);
     const modelB = sequelize.model(tableB);
