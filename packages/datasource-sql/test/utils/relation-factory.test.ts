@@ -7,8 +7,6 @@ import RelationFactory from '../../src/utils/relation-factory';
 describe('RelationFactory', () => {
   const setup = () => {
     const referenceModel = {
-      hasOne: jest.fn(),
-      hasMany: jest.fn(),
       belongsTo: jest.fn(),
       getAttributes: jest.fn().mockReturnValue([]),
     } as any as ModelStatic<Model>;
@@ -45,9 +43,9 @@ describe('RelationFactory', () => {
               referencedTableName: 'tableB',
             },
           ];
-          const excludedTables = ['tableA'];
+          const excludedModels = ['tableA'];
 
-          RelationFactory.build('tableC', foreignReferences, [], sequelize, excludedTables);
+          RelationFactory.build('tableC', foreignReferences, [], sequelize, excludedModels);
 
           expect(referenceModel.belongsTo).not.toHaveBeenCalled();
         });
@@ -66,9 +64,9 @@ describe('RelationFactory', () => {
               referencedTableName: 'tableB',
             },
           ];
-          const excludedTables = ['tableB'];
+          const excludedModels = ['tableB'];
 
-          RelationFactory.build('tableC', foreignReferences, [], sequelize, excludedTables);
+          RelationFactory.build('tableC', foreignReferences, [], sequelize, excludedModels);
 
           expect(referenceModel.belongsTo).not.toHaveBeenCalled();
         });
@@ -86,9 +84,9 @@ describe('RelationFactory', () => {
               referencedTableName: 'tableA',
             },
           ];
-          const excludedTables = ['tableA'];
+          const excludedModels = ['tableA'];
 
-          RelationFactory.build('tableC', foreignReferences, [], sequelize, excludedTables);
+          RelationFactory.build('tableC', foreignReferences, [], sequelize, excludedModels);
 
           expect(referenceModel.belongsTo).not.toHaveBeenCalled();
         });
@@ -104,9 +102,9 @@ describe('RelationFactory', () => {
               referencedTableName: 'tableB',
             },
           ];
-          const excludedTables = ['tableA'];
+          const excludedModels = ['tableA'];
 
-          RelationFactory.build('tableA', foreignReferences, [], sequelize, excludedTables);
+          RelationFactory.build('tableA', foreignReferences, [], sequelize, excludedModels);
 
           expect(referenceModel.belongsTo).not.toHaveBeenCalled();
         });

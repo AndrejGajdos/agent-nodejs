@@ -9,9 +9,9 @@ export default class RelationFactory {
     foreignReferences: Partial<ForeignKeyReference>[],
     uniqueFields: string[],
     sequelize: Sequelize,
-    excludedTables: string[],
+    excludedModels: string[],
   ): void {
-    if (excludedTables.includes(tableName)) {
+    if (excludedModels.includes(tableName)) {
       return;
     }
 
@@ -22,7 +22,7 @@ export default class RelationFactory {
         foreignReferences as [Partial<ForeignKeyReference>, Partial<ForeignKeyReference>],
         model,
         sequelize,
-        excludedTables,
+        excludedModels,
       );
     } else {
       RelationFactory.buildOtherRelations(
@@ -30,7 +30,7 @@ export default class RelationFactory {
         model,
         uniqueFields,
         sequelize,
-        excludedTables,
+        excludedModels,
       );
     }
   }
@@ -40,10 +40,10 @@ export default class RelationFactory {
     model: ModelStatic<Model>,
     uniqueFields: string[],
     sequelize: Sequelize,
-    excludedTables: string[],
+    excludedModels: string[],
   ): void {
     foreignReferences.forEach(({ columnName, referencedTableName, referencedColumnName }) => {
-      if (excludedTables.includes(referencedTableName)) {
+      if (excludedModels.includes(referencedTableName)) {
         return;
       }
 
@@ -72,14 +72,14 @@ export default class RelationFactory {
     foreignReferences: [Partial<ForeignKeyReference>, Partial<ForeignKeyReference>],
     model: ModelStatic<Model>,
     sequelize: Sequelize,
-    excludedTables: string[],
+    excludedModels: string[],
   ): void {
     const [
       { referencedTableName: tableA, columnName: columnA, referencedColumnName: referencedColumnA },
       { referencedTableName: tableB, columnName: columnB, referencedColumnName: referencedColumnB },
     ] = foreignReferences;
 
-    if (excludedTables.includes(tableA) || excludedTables.includes(tableB)) {
+    if (excludedModels.includes(tableA) || excludedModels.includes(tableB)) {
       return;
     }
 

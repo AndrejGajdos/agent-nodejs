@@ -1,20 +1,12 @@
-import { Model } from 'sequelize/types/model';
-import { ModelStatic, Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 import ModelFactory from '../../src/utils/model-factory';
 
 describe('ModelFactory', () => {
   const setup = () => {
-    const model = {
-      belongsTo: jest.fn(),
-    } as any as ModelStatic<Model>;
-    const referenceModel = {
-      hasOne: jest.fn(),
-      hasMany: jest.fn(),
-    } as any as ModelStatic<Model>;
     const sequelize = { define: jest.fn() } as any as Sequelize;
 
-    return { model, referenceModel, sequelize };
+    return { sequelize };
   };
 
   describe('build', () => {
@@ -25,11 +17,11 @@ describe('ModelFactory', () => {
           throw new Error('Model is not valid');
         });
         const fieldDescription = ['aFieldDescription'];
-        const excludedTables = [];
+        const excludedModels = [];
 
-        ModelFactory.build('tableC', [fieldDescription], sequelize, excludedTables);
+        ModelFactory.build('tableC', [fieldDescription], sequelize, excludedModels);
 
-        expect(excludedTables).toEqual(['tableC']);
+        expect(excludedModels).toEqual(['tableC']);
       });
     });
   });
